@@ -1,0 +1,255 @@
+-- 초기화
+
+DROP TABLE ACADEMY_A;
+DROP TABLE ACADEMY_B;
+
+-- A 학원 수강신청 ==============================================================
+
+CREATE TABLE ACADEMY_A (
+    STUDENT_NO NUMBER PRIMARY KEY,
+    STUDENT_NAME VARCHAR2(20) NOT NULL
+);
+
+INSERT INTO ACADEMY_A VALUES (1001, '정소화');
+INSERT INTO ACADEMY_A VALUES (1002, '김용욱');
+INSERT INTO ACADEMY_A VALUES (1003, '고명석');
+INSERT INTO ACADEMY_A VALUES (1004, '김연아');
+
+-- B 학원 수강신청 ==============================================================
+
+CREATE TABLE ACADEMY_B (
+    STUDENT_NO NUMBER PRIMARY KEY,
+    STUDENT_NAME VARCHAR2(20) NOT NULL
+);
+
+INSERT INTO ACADEMY_B VALUES (1005, '김태환');
+INSERT INTO ACADEMY_B VALUES (1006, '이윤아');
+INSERT INTO ACADEMY_B VALUES (1003, '고명석');
+INSERT INTO ACADEMY_B VALUES (1004, '김연아');
+
+-- EQUI JOIN ===================================================================
+
+--1
+
+SELECT * 
+FROM ACADEMY_A T1, ACADEMY_B T2
+WHERE T1.STUDENT_NO = T2.STUDENT_NO;
+
+-- 2
+
+SELECT T1.STUDENT_NO, T2.STUDENT_NAME
+FROM ACADEMY_A T1, ACADEMY_B T2
+WHERE T1.STUDENT_NO = T2.STUDENT_NO;
+
+-- NON EQUI JOIN ===============================================================
+
+SELECT *
+FROM ACADEMY_A T1, ACADEMY_B T2
+WHERE T1.STUDENT_NO >= T2.STUDENT_NO;
+
+-- INNER JOIN ==================================================================
+
+SELECT * 
+FROM ACADEMY_A T1
+JOIN ACADEMY_B T2
+ON(T1.STUDENT_NO = T2.STUDENT_NO);
+
+-- LEFT JOIN ===================================================================
+
+SELECT *
+FROM ACADEMY_A T1
+LEFT JOIN ACADEMY_B T2
+ON(T1.STUDENT_NO = T2.STUDENT_NO)
+ORDER BY T1.STUDENT_NO;
+
+-- RIGHT JOIN ==================================================================
+
+SELECT *
+FROM ACADEMY_A T1
+RIGHT JOIN ACADEMY_B T2
+ON(T1.STUDENT_NO = T2.STUDENT_NO)
+ORDER BY T1.STUDENT_NO;
+
+-- OUTER JOIN ==================================================================
+
+--SELECT *
+SELECT T1.STUDENT_NO, T1.STUDENT_NAME, 
+T2.STUDENT_NO, T2.STUDENT_NAME
+FROM ACADEMY_A T1
+FULL OUTER JOIN ACADEMY_B T2
+ON(T1.STUDENT_NO = T2.STUDENT_NO)
+ORDER BY T1.STUDENT_NO;
+
+
+-- NATURAL JOIN ================================================================
+
+SELECT *
+FROM ACADEMY_A T1
+NATURAL JOIN ACADEMY_B T2;
+-- 같은 이름을 가진 컬럼, 동일한 데이터
+
+--==============================================================================
+
+-- SELECT 뒤에 원하는 값 붙이면 해당 값만 불러옴 
+-- EX) T1.STUDENT_NO, T2.STUDENT_NAME
+
+--==============================================================================
+
+DROP TABLE EMP;
+DROP TABLE DEPT;
+
+CREATE TABLE DEPT (
+    DEPT_NO NUMBER PRIMARY KEY,
+    DEPT_NAME VARCHAR2(20) NOT NULL
+);
+
+CREATE TABLE EMP (
+    EMP_NO NUMBER PRIMARY KEY,
+    EMP_NAME VARCHAR2(20) NOT NULL,
+    DEPT_NO NUMBER NOT NULL,
+
+    CONSTRAINT FK_DEPT_NO FOREIGN KEY(DEPT_NO)
+    REFERENCES DEPT (DEPT_NO)
+);
+
+INSERT INTO DEPT VALUES (1, '인사부');
+INSERT INTO DEPT VALUES (2, '연구부');
+INSERT INTO DEPT VALUES (3, '홍보부');
+
+INSERT INTO EMP VALUES (1001, '정소화', 3);
+INSERT INTO EMP VALUES (1002, '김용욱', 1);
+INSERT INTO EMP VALUES (1003, '고명석', 2);
+
+SELECT * FROM DEPT;
+SELECT * FROM EMP;
+
+-- 퀴즈1
+
+SELECT T1.DEPT_NAME, T2.EMP_NAME
+FROM DEPT T1
+RIGHT JOIN EMP T2
+ON(T1.DEPT_NO = T2.DEPT_NO)
+ORDER BY T1.DEPT_NO;
+
+-- 퀴즈 2--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-- 초기화
+DROP TABLE CLASS;
+DROP TABLE SUB_CLASS;
+DROP TABLE STUDENT;
+DROP TABLE CLASS_STUDENT;
+--------------------------------------------------------------------------------
+CREATE TABLE CLASS (
+    CLASS_NO NUMBER PRIMARY KEY,
+    CLASS_NAME VARCHAR2(20)
+);
+
+INSERT INTO CLASS VALUES (1001, '수학');
+INSERT INTO CLASS VALUES (1002, '국어');
+
+SELECT * FROM CLASS;
+--------------------------------------------------------------------------------
+CREATE TABLE SUB_CLASS (
+    SUB_CLASS_NO NUMBER PRIMARY KEY,
+    SUB_CLASS_NAME VARCHAR2(20)
+);
+
+INSERT INTO SUB_CLASS VALUES (3001, '사회');
+INSERT INTO SUB_CLASS VALUES (3002, '과학');
+
+SELECT * FROM SUB_CLASS;
+--------------------------------------------------------------------------------
+CREATE TABLE STUDENT (
+    STUDENT_NO NUMBER PRIMARY KEY,
+    STUDENT_NAME VARCHAR2(20)
+);
+
+INSERT INTO STUDENT VALUES (2001, '정소화');
+INSERT INTO STUDENT VALUES (2002, '김용욱');
+INSERT INTO STUDENT VALUES (2003, '고명석');
+INSERT INTO STUDENT VALUES (2004, '강희재');
+
+SELECT * FROM STUDENT;
+--------------------------------------------------------------------------------
+CREATE TABLE CLASS_STUDENT(
+    CS_NO NUMBER PRIMARY KEY,
+    CLASS_NO NUMBER,
+    SUB_CLASS_NO NUMBER,
+    STUDENT_NO NUMBER,
+    
+    CONSTRAINT FK_CLASS_NO FOREIGN KEY(CLASS_NO) REFERENCES CLASS(CLASS_NO),
+    CONSTRAINT FK_SUB_CLASS_NO FOREIGN KEY(SUB_CLASS_NO) REFERENCES SUB_CLASS(SUB_CLASS_NO),
+    CONSTRAINT FK_STUDENT_NO FOREIGN KEY(STUDENT_NO) REFERENCES STUDENT(STUDENT_NO)    
+);
+
+INSERT INTO CLASS_STUDENT VALUES (1, 1001, 3001, 2001);
+INSERT INTO CLASS_STUDENT VALUES (2, 1002, 3001, 2001);
+INSERT INTO CLASS_STUDENT VALUES (3, 1001, 3002, 2002);
+INSERT INTO CLASS_STUDENT VALUES (4, 1002, 3002, 2002);
+INSERT INTO CLASS_STUDENT VALUES (5, 1002, 3002, 2003);
+INSERT INTO CLASS_STUDENT VALUES (6, 1002, 3002, 2004);
+--------------------------------------------------------------------------------
+SELECT * FROM CLASS;
+SELECT * FROM SUB_CLASS;
+SELECT * FROM STUDENT;
+SELECT * FROM CLASS_STUDENT;
+--------------------------------------------------------------------------------
+
+-- 퀴즈2 답
+
+SELECT T4.STUDENT_NO, T4.STUDENT_NAME, T2.CLASS_NAME, T3.SUB_CLASS_NAME
+FROM CLASS_STUDENT T1
+
+JOIN CLASS T2
+ON (T1.CLASS_NO = T2.CLASS_NO)
+
+JOIN SUB_CLASS T3
+ON (T1.SUB_CLASS_NO = T3.SUB_CLASS_NO)
+
+JOIN STUDENT T4
+ON (T1.STUDENT_NO = T4.STUDENT_NO);
+
+-- 다양하게 조인
+
+-- NATURAL
+
+SELECT *
+--SELECT T1.STUDENT_NAME, T2.SUB_CLASS_NAME
+FROM STUDENT T1
+NATURAL JOIN SUB_CLASS T2;
+
+-- OUTER
+
+SELECT *
+FROM STUDENT T1
+FULL OUTER JOIN SUB_CLASS T2
+ON(T1.STUDENT_NAME = T2.SUB_CLASS_NAME)
+ORDER BY T1.STUDENT_NAME; -- 정렬
+
+-- EQUI
+
+SELECT t2.sub_class_no
+FROM STUDENT T1,
+CLASS_STUDENT T2
+WHERE T1.STUDENT_NO = T2.STUDENT_NO;
+
+-- INNER
+
+SELECT T1.STUDENT_NAME
+FROM STUDENT T1
+JOIN CLASS_STUDENT T2
+ON(T1.STUDENT_NO = T2.STUDENT_NO);
+
+-- LEFT
+
+SELECT *
+FROM CLASS_STUDENT T1
+LEFT JOIN SUB_CLASS T2
+ON(T1.SUB_CLASS_NO = T2.SUB_CLASS_NO);
+
+--------------------------------------------------------------------------------
+SELECT * FROM CLASS;
+SELECT * FROM SUB_CLASS;
+SELECT * FROM STUDENT;
+SELECT * FROM CLASS_STUDENT;
+--------------------------------------------------------------------------------
+
