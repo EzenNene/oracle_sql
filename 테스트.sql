@@ -381,10 +381,28 @@ DELETE FROM CUSTOMER WHERE NAME = '둘리';
 DELETE FROM CUSTOMER; -- 전체 행 삭제
 
 
+-- sequence
 
+create table topic(
+    id number not null,
+    title varchar2(50) not null,
+    description varchar2(4000),
+    created date not null,
+    constraint pk_topic primary key (id)
+);
 
+insert into topic values (seq_topic.nextval, 'oracle', 'oracle is ...', sysdate);
+insert into topic values (seq_topic.nextval, 'MySQL', 'MySQL is ...', sysdate);
+insert into topic values (seq_topic.nextval, 'SQL Server', 'SQL server is ...', sysdate);
 
+delete from topic;
+select * from topic;
 
+create sequence seq_topic; -- 시퀀스 생성
+select seq_topic.currval from dual; -- 현재 시퀀스 값 확인
+
+insert into topic values (seq_topic.nextval, 'MongoDB', 'MongoDB is ...', sysdate); -- 시퀀스 값 넣는법 (nextval)
+-- 시퀀스와 프라이머리키는 같이 있어야 강하다
 
 
 
